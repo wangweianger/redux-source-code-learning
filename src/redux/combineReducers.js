@@ -4,6 +4,8 @@ import { ActionTypes } from './createStore'
 import isPlainObject from 'lodash/isPlainObject'
 import warning from './utils/warning'
 
+
+//获得不知道的 State 错误信息  打印 actionName 
 function getUndefinedStateErrorMessage(key, action) {
   const actionType = action && action.type
   const actionName = (actionType && `"${actionType.toString()}"`) || 'an action'
@@ -101,13 +103,28 @@ function assertReducerShape(reducers) {
  * @returns {Function} A reducer function that invokes every reducer inside the
  * passed object, and builds a state object with the same shape.
  */
+
+/*
+  combineReducers 辅助函数的作用是，把一个由多个不同 reducer 函数作为 value 的 object，合并成一个最终的 reducer 函数，然后就可以对这个 reducer 调用 createStore
+  合并后的格式为json 大致结构为
+  {
+      reducer1: ...
+      reducer2: ...
+  }
+ */
 export default function combineReducers(reducers) {
+     // 传入的reducers 为一个object  遍历object的可以存储  到 reducerKeys 变量中
+     // 体现在案例中值为 ['home','cart']
   const reducerKeys = Object.keys(reducers)
+  // reducers 的复制 json
+  // 运行之后体现在案例中的值为 { home:function home(){...}, cart:function cart(){...} }
   const finalReducers = {}
   for (let i = 0; i < reducerKeys.length; i++) {
     const key = reducerKeys[i]
 
     if (process.env.NODE_ENV !== 'production') {
+        //如果是 production 环境  reducers[key]的值为 undefined 就给出警告信息
+
       if (typeof reducers[key] === 'undefined') {
         warning(`No reducer provided for key "${key}"`)
       }
