@@ -17,12 +17,18 @@ function getUndefinedStateErrorMessage(key, action) {
   )
 }
 
+//整个函数的作用就是根据不同的状态输出一些提示信息
 function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
+    //记录传入的 reducers key
   const reducerKeys = Object.keys(reducers)
+  //如果action为真并且 action.type === ActionTypes.INIT
   const argumentName = action && action.type === ActionTypes.INIT ?
+    //preloadedstate参数传递给CreateStore
     'preloadedState argument passed to createStore' :
+    //收到以前的state状态
     'previous state received by the reducer'
 
+    //如果reducers不为真 抛出 信息 确认argument参数
   if (reducerKeys.length === 0) {
     return (
       'Store does not have a valid reducer. Make sure the argument passed ' +
@@ -30,6 +36,7 @@ function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, une
     )
   }
 
+  //如果传入的state不是object 这抛出 argument to be an object 的信息
   if (!isPlainObject(inputState)) {
     return (
       `The ${argumentName} has unexpected type of "` +
@@ -38,16 +45,20 @@ function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, une
       `keys: "${reducerKeys.join('", "')}"`
     )
   }
-
+  /*
+  检测 inputState的key 中如果出现了 reducers中没有的key 则标记 unexpectedKeys[key]=true
+   */
+  //!unexpectedKeyCache[key] 一直为 true
   const unexpectedKeys = Object.keys(inputState).filter(key =>
     !reducers.hasOwnProperty(key) &&
     !unexpectedKeyCache[key]
   )
-
+  //如果unexpectedKeys 值为真 遍历 并给 unexpectedKeyCache赋值  不是生产环境时unexpectedKeyCache默认值为{}
   unexpectedKeys.forEach(key => {
     unexpectedKeyCache[key] = true
   })
 
+  //如果unexpectedKeys 的length为真 这抛出 意外的key值，相应的key讲被忽略掉
   if (unexpectedKeys.length > 0) {
     return (
       `Unexpected ${unexpectedKeys.length > 1 ? 'keys' : 'key'} ` +
@@ -59,10 +70,15 @@ function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, une
 }
 
 function assertReducerShape(reducers) {
+    //遍历reducers
   Object.keys(reducers).forEach(key => {
     const reducer = reducers[key]
+    //传入 undefined 和 { type: ActionTypes.INIT } 两个参数 检测返回值是否为underfined
+    //此处在案例中可以理解为 function home (undefined, { type: ActionTypes.INIT }) {...}
+    //去看看返回值是否是underfined
     const initialState = reducer(undefined, { type: ActionTypes.INIT })
-
+    //如果值为underfined给出error提示 是否有返回默认的state 
+    //建议返回initial state, 如果不想返回值，你可以返回一个null值
     if (typeof initialState === 'undefined') {
       throw new Error(
         `Reducer "${key}" returned undefined during initialization. ` +
@@ -72,7 +88,12 @@ function assertReducerShape(reducers) {
         `you can use null instead of undefined.`
       )
     }
-
+    /*
+    当用随机类型探测时返回underfined
+    不要用任何以 "redux/*" 为命名空间的 actions key,他们被认为是私有的
+    相反，如果有任何未知的actions,你应该返回最近的state,不管action type是什么
+    初始状态可能不能是underfined,但可以是null
+     */
     const type = '@@redux/PROBE_UNKNOWN_ACTION_' + Math.random().toString(36).substring(7).split('').join('.')
     if (typeof reducer(undefined, { type }) === 'undefined') {
       throw new Error(
@@ -116,7 +137,7 @@ export default function combineReducers(reducers) {
      // 传入的reducers 为一个object  遍历object的可以存储  到 reducerKeys 变量中
      // 体现在案例中值为 ['home','cart']
   const reducerKeys = Object.keys(reducers)
-  // reducers 的复制 json
+  // reducers 的中value值为funciton组时组成的json
   // 运行之后体现在案例中的值为 { home:function home(){...}, cart:function cart(){...} }
   const finalReducers = {}
   for (let i = 0; i < reducerKeys.length; i++) {
@@ -129,51 +150,69 @@ export default function combineReducers(reducers) {
         warning(`No reducer provided for key "${key}"`)
       }
     }
-
+    //当 reducers[key] 为function 时才给 finalReducers赋值
     if (typeof reducers[key] === 'function') {
+        //体现在案例中运行完之后 finalReducers 的值为 { home:function home(){...}, cart:function cart(){...} }
       finalReducers[key] = reducers[key]
     }
   }
+  //finalReducers 中key值集合   相对于reducerKeys的区别在于去掉了value值不为function类型的key值
   const finalReducerKeys = Object.keys(finalReducers)
 
   let unexpectedKeyCache
   if (process.env.NODE_ENV !== 'production') {
+    //不是 production 环境时定义为空对象
     unexpectedKeyCache = {}
   }
-
+  /*
+  此处检测传入的reducers 如果没有匹配到相应的type 是否有返回默认的state 
+  建议返回initial state, 如果不想返回值，你可以返回一个null值
+   */
   let shapeAssertionError
   try {
     assertReducerShape(finalReducers)
   } catch (e) {
+    // 如果报错记录报错信息
     shapeAssertionError = e
   }
 
+  // 最终返回 combination 这个function 
   return function combination(state = {}, action) {
+    //如果检测传入的reducers有错误 则抛出错误信息
     if (shapeAssertionError) {
       throw shapeAssertionError
     }
 
+    //如果不是 production 环境
     if (process.env.NODE_ENV !== 'production') {
+        //若 warningMessage 的值为真，则返回一列的警告信息
       const warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
       if (warningMessage) {
         warning(warningMessage)
       }
     }
 
+    //核心代码  合并state
     let hasChanged = false
     const nextState = {}
     for (let i = 0; i < finalReducerKeys.length; i++) {
       const key = finalReducerKeys[i]
       const reducer = finalReducers[key]
+      //上此对应key 的state值
       const previousStateForKey = state[key]
+      //调用reducer 之后返回的state值
       const nextStateForKey = reducer(previousStateForKey, action)
+      //如果返回值为underfined 者抛出错误信息
       if (typeof nextStateForKey === 'undefined') {
         const errorMessage = getUndefinedStateErrorMessage(key, action)
         throw new Error(errorMessage)
       }
+      //合并state
       nextState[key] = nextStateForKey
+      //判断state值是否改变
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey
     }
+    //判断state值是否改变 若改变者用新的 state值即： nextState ，  如果没有改变则返回传入的 state值
     return hasChanged ? nextState : state
   }
 }
