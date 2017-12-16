@@ -1,12 +1,5 @@
 import "babel-polyfill";
 
-import {
-  createStore,
-  combineReducers,
-  bindActionCreators,
-  applyMiddleware,
-  compose
-} from './redux/index.js'
+require('./mean-compose')
 
 
-// compose 就是一个工具函数
