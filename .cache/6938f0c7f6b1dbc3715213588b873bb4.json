@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"babel-polyfill"},{"name":"./index.js"}],"generated":{"js":"\"use strict\";\n\nrequire(\"babel-polyfill\");\n\nvar _index = require(\"./index.js\");"},"hash":"113ca3ee5aed20a6efc26672478a2acb"}
