@@ -6,5 +6,7 @@ import {
   bindActionCreators,
   applyMiddleware,
   compose
-} from './index.js'
+} from './redux/index.js'
 
+
+// compose 就是一个工具函数
