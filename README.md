@@ -8,5 +8,6 @@
 
 ### 解析进度
 ### 解析了 compose.js
+### 解析了 createStore.js
 
 
