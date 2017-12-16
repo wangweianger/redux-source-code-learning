@@ -6,6 +6,7 @@ src/.DS_Store
 src/assets/.DS_Store
 */.DS_Store
 */*/.DS_Store
+/.cache/*
 
 
 
