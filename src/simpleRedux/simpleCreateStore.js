@@ -28,10 +28,11 @@ function createStore(reducer, preloadedState, enhancer){
         }
         return action
     }
-    function replaceReducer(){}
-
+    function replaceReducer(nextReducer) {
+        currentReducer = nextReducer
+        dispatch({ type: ActionTypes.INIT })
+    }
     dispatch({ type: ActionTypes.INIT })
-
     return {
         getState,
         subscribe,
@@ -40,6 +41,7 @@ function createStore(reducer, preloadedState, enhancer){
     }
 }
 
+//-------------------测试代码---------------------------
 
 const ADD_TODO = 'ADD_TODO'
 function todos(state = [], action) {
@@ -69,7 +71,7 @@ let actions = store.dispatch({
   text: 'Read the docs'
 })
 
-// console.log(store.getState())
+console.log(store.getState())
 
 
 

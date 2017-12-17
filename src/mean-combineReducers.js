@@ -35,6 +35,8 @@ const reducers = combineReducers({
     cart,
 })
 
+console.log(reducers)
+
 let store = createStore(reducers,initialStateHome)
 
 

@@ -22,5 +22,7 @@ npm run dev
 ### 解析了 createStore.js
 ### http://blog.seosiwei.com/detail/13
 ### 解析了 combineReducers.js
+### http://blog.seosiwei.com/detail/14
 ### 解析了 alpplyMiddleware.js
+### http://blog.seosiwei.com/detail/15
 ### 解析了 bindActionCreators.js
