@@ -3,6 +3,15 @@
 >  * parcel 搭建服务器
 >  * babel  编译
 
+### 运行
+```
+git clone https://github.com/wangweianger/redux-source-code-learning
+
+yarn install || npm install
+
+npm run dev
+
+``` 
 
 # 对源码做了详细的注释和解释
 
