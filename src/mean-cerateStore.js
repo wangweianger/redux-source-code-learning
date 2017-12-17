@@ -2,6 +2,8 @@ import "babel-polyfill";
 
 import { createStore } from './redux'
 
+console.log('----------------------createStore-------------------------')
+
 const ADD_TODO = 'ADD_TODO'
 let currentValue
 

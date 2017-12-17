@@ -1,7 +1,8 @@
 import "babel-polyfill";
 
-import { combineReducers } from './redux'
+import { createStore,combineReducers } from './redux'
 
+console.log('----------------------combineReducers-------------------------')
 
 const ADD_SOME_OME = 'ADD_SOME_OME'
 const GET_CART_NUMBER = 'GET_CART_NUMBER'
@@ -34,7 +35,15 @@ const reducers = combineReducers({
     cart,
 })
 
-console.log(reducers)
+let store = createStore(reducers,initialStateHome)
+
+
+let actions = store.dispatch({
+  type: 'ADD_SOME_OME',
+  number: 50
+})
+
+console.log(store.getState())
 
 
 
