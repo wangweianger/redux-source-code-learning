@@ -13,7 +13,7 @@ import "babel-polyfill";
 
 
 /*
-    上面的英文文档左右最好的案例诠释
+    上面的英文文档是最好的案例诠释
     例如： compose(f, g, h) 最终的结果为  f(g(h(...args)))
  */
 
@@ -66,13 +66,13 @@ export default function compose(...funcs) {
  */
 
 
-/*--------用通俗的代码写下上面的代码---------------*/
+/*--------用通俗的方式写上面的代码---------------*/
 function copycompose() {
     var funcs = [];
     for(var i=0;i<arguments.length;i++){
         funcs[i]=arguments[i]
     }
-    // 如果 参数为0个直接返回function
+    // 如果 参数为0个直接返回 function
     if (funcs.length === 0) {
         return function(arg){
             return arg

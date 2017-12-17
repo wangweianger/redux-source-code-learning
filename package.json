@@ -24,6 +24,7 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
     "symbol-observable": "^1.1.0"
   }
 }

@@ -9,6 +9,7 @@ import $$observable from 'symbol-observable'
  * If the current state is undefined, you must return the initial state.
  * Do not reference these action types directly in your code.
  */
+//init actions  初始化时调用一次
 export const ActionTypes = {
   INIT: '@@redux/INIT'
 }
@@ -55,7 +56,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
       throw new Error('Expected the enhancer to be a function.')
     }
 
-    // 如果为真 则中断运行 并把createStore 作为参数传给enhancer
+    // 如果为真 则中断运行， 并把createStore 作为参数传给enhancer
     // 主要作用是 加入中间件 例如：applyMiddleware
     return enhancer(createStore)(reducer, preloadedState)
   }
@@ -65,12 +66,13 @@ export default function createStore(reducer, preloadedState, enhancer) {
     throw new Error('Expected the reducer to be a function.')
   }
 
-  //把传入的 reducer 作为函数内变量保存起来  就是一个函数  例如案例的：todos 函数
+  //把传入的 reducer 作为函数内变量保存起来 。 实质上reducer就是一个函数 ， 例如在案例中体现为：todos 函数
   let currentReducer = reducer
 
   //闭包内一直存在  体现在调用案例中的话此值为 [ 'Use Redux' ]  
   let currentState = preloadedState
 
+  //用来存储subscribe 方法 订阅的函数
   let currentListeners = []
   let nextListeners = currentListeners
   // 是否调用中
@@ -87,9 +89,10 @@ export default function createStore(reducer, preloadedState, enhancer) {
    *
    * @returns {any} The current state tree of your application.
    */
-  //此方法返回 redux 的 state   
-  //第一次加载值为为 [ 'Use Redux' ]
+  //此方法返回 redux 的唯一state状态值   
+  //案例中第一次加载值为 [ 'Use Redux' ]
   function getState() {
+    //currentState 是闭包内变量，会一直存在
     return currentState
   }
 
@@ -118,8 +121,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
    */
   
   /*
-    变化监听器 每当 dispatch action 的时候就会执行
-
+    变化监听器 每当调用dispatch action 的时候就会执行
    */
   function subscribe(listener) {
     // 如果listener 不为函数直接抛出错误
@@ -134,7 +136,8 @@ export default function createStore(reducer, preloadedState, enhancer) {
     ensureCanMutateNextListeners()
     nextListeners.push(listener)
 
-    //返回移除当前监听的 unsubscribe 函数 调用者移除当前监听函数 及移除 nextListeners 数组中对应的 listener
+    //返回移除当前监听的 unsubscribe 函数， 
+    //调用者移除当前监听函数 及移除 nextListeners 数组中对应的listener函数
     return function unsubscribe() {
       if (!isSubscribed) {
         return
@@ -176,10 +179,10 @@ export default function createStore(reducer, preloadedState, enhancer) {
   
   /*
     核心函数 dispatch
-    唯一能改变 Store 数据的触发函数  即唯一能够改变 currentState 值得触发函数 
+    唯一能改变 Store 数据的触发函数， 即唯一能够改变内部变量currentState的方式 
    */
   function dispatch(action) {
-    //如果action不是Object 对象 则抛出错误
+    //如果action不是Object对象，则抛出错误
     if (!isPlainObject(action)) {
       throw new Error(
         'Actions must be plain objects. ' +
@@ -187,7 +190,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
       )
     }
 
-    // action.type 值不为真者抛出错误
+    // action.type 值不为真则抛出错误
     if (typeof action.type === 'undefined') {
       throw new Error(
         'Actions may not have an undefined "type" property. ' +
@@ -195,12 +198,12 @@ export default function createStore(reducer, preloadedState, enhancer) {
       )
     }
 
-    // Reducers 也许没有派遣的actions
+    // Reducers 也许没有派遣的actions，就是Reducers没有匹配到相应的actions函数
     if (isDispatching) {
       throw new Error('Reducers may not dispatch actions.')
     }
 
-    // 如果跑出错误 这标识 Reducers 也许没有派遣的actions
+    // 如果抛出错误，这表示Reducers也许没有派遣的actions
     try {
       isDispatching = true
       // 更新唯一状态数currentState 的值   
@@ -218,6 +221,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     }
 
     // 触发nextListeners 中的所有监听函数
+    // 体现在案例中的话主要作用是监听触发actions前后唯一state数据是否有改变
     const listeners = currentListeners = nextListeners
     for (let i = 0; i < listeners.length; i++) {
       const listener = listeners[i]
@@ -244,7 +248,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
       throw new Error('Expected the nextReducer to be a function.')
     }
 
-    //用传入的 nextReducer 替换掉 原来的 currentReducer    再初始化一次 
+    //用传入的 nextReducer 替换掉原来的 currentReducer  ， 再初始化一次 
     currentReducer = nextReducer
     dispatch({ type: ActionTypes.INIT })
   }

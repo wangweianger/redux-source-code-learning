@@ -135,7 +135,7 @@ function assertReducerShape(reducers) {
  */
 export default function combineReducers(reducers) {
      // 传入的reducers 为一个object  遍历object的可以存储  到 reducerKeys 变量中
-     // 体现在案例中值为 ['home','cart']
+     // 体现在案例中值为 { home:function home(){...} , cart:function cart(){...} }
   const reducerKeys = Object.keys(reducers)
   // reducers 的中value值为funciton组时组成的json
   // 运行之后体现在案例中的值为 { home:function home(){...}, cart:function cart(){...} }
