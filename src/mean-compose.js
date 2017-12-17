@@ -2,7 +2,7 @@ import "babel-polyfill";
 
 import { compose } from './redux'
 
-
+console.log('----------------------compose-------------------------')
 // compose 就是一个工具函数 
 /* 看看官方定义 
 从右到左来组合多个函数。这是函数式编程中的方法，为了方便，被放到了 Redux 里。 当需要把多个 store 增强器 依次执行的时候，需要用到它。
