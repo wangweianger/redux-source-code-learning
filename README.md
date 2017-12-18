@@ -26,3 +26,4 @@ npm run dev
 ### 解析了 alpplyMiddleware.js
 ### http://blog.seosiwei.com/detail/15
 ### 解析了 bindActionCreators.js
+### http://blog.seosiwei.com/detail/16
